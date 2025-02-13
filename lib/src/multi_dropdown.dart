@@ -113,6 +113,9 @@ class MultiDropdown<T extends Object> extends StatefulWidget {
     this.onSelectionChange,
     this.onSearchChange,
     this.closeOnBackButton = false,
+    this.singleLine = false,
+    this.singleLineTextStyle,
+    this.singleLineTextOverflow = TextOverflow.ellipsis,
     Key? key,
   })  : future = null,
         super(key: key);
@@ -163,6 +166,9 @@ class MultiDropdown<T extends Object> extends StatefulWidget {
     this.onSelectionChange,
     this.onSearchChange,
     this.closeOnBackButton = false,
+    this.singleLine = false,
+    this.singleLineTextStyle,
+    this.singleLineTextOverflow = TextOverflow.ellipsis,
     Key? key,
   })  : items = const [],
         super(key: key);
@@ -240,13 +246,27 @@ class MultiDropdown<T extends Object> extends StatefulWidget {
   /// Note: This option requires the app to have a router, such as MaterialApp.router, in order to work properly.
   final bool closeOnBackButton;
 
+  /// Place selected items in single line as text
+  final bool singleLine;
+
+  /// The Text Style of single line text
+  final TextStyle? singleLineTextStyle;
+
+  /// The Text Overflow of single line text
+  final TextOverflow? singleLineTextOverflow;
+
   @override
   State<MultiDropdown<T>> createState() => _MultiDropdownState<T>();
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(DiagnosticsProperty<Widget?>('searchFieldSeparator', searchFieldSeparator));
+    properties.add(
+      DiagnosticsProperty<Widget?>(
+        'searchFieldSeparator',
+        searchFieldSeparator,
+      ),
+    );
   }
 }
 
@@ -606,6 +626,16 @@ class _MultiDropdownState<T extends Object> extends State<MultiDropdown<T>> {
   /// Build the selected items for the dropdown.
   Widget _buildSelectedItems(List<DropdownItem<T>> selectedOptions) {
     final chipDecoration = widget.chipDecoration;
+
+    if (widget.singleLine) {
+      final text = selectedOptions.map((option) => option.label).join(', ');
+
+      return Text(
+        text,
+        style: widget.singleSelectFieldTextStyle,
+        overflow: widget.singleLineTextOverflow,
+      );
+    }
 
     if (widget.selectedItemBuilder != null) {
       return Wrap(
