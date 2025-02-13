@@ -579,30 +579,37 @@ class _MultiDropdownState<T extends Object> extends State<MultiDropdown<T>> {
       return const CircularProgressIndicator.adaptive();
     }
 
-    if (widget.fieldDecoration.showClearIcon &&
-        _dropdownController.selectedItems.isNotEmpty) {
-      return GestureDetector(
-        child: const Icon(Icons.clear),
-        onTap: () {
-          _dropdownController.clearAll();
-          _formFieldKey.currentState
-              ?.didChange(_dropdownController.selectedItems);
-        },
-      );
-    }
-
     if (widget.fieldDecoration.suffixIcon == null) {
       return null;
     }
 
-    if (!widget.fieldDecoration.animateSuffixIcon) {
-      return widget.fieldDecoration.suffixIcon;
-    }
-
-    return AnimatedRotation(
-      turns: _dropdownController.isOpen ? 0.5 : 0,
-      duration: const Duration(milliseconds: 200),
-      child: widget.fieldDecoration.suffixIcon,
+    return Padding(
+      padding: const EdgeInsets.only(right: 16),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          if (widget.fieldDecoration.showClearIcon &&
+              _dropdownController.selectedItems.isNotEmpty)
+            GestureDetector(
+              child:
+                  widget.fieldDecoration.clearIcon ?? const Icon(Icons.clear),
+              onTap: () {
+                _dropdownController.clearAll();
+                _formFieldKey.currentState
+                    ?.didChange(_dropdownController.selectedItems);
+              },
+            ),
+          if (!widget.fieldDecoration.animateSuffixIcon) ...[
+            widget.fieldDecoration.suffixIcon ?? const SizedBox.shrink(),
+          ] else
+            AnimatedRotation(
+              turns: _dropdownController.isOpen ? 0.5 : 0,
+              duration: const Duration(milliseconds: 200),
+              child: widget.fieldDecoration.suffixIcon,
+            ),
+        ],
+      ),
     );
   }
 
